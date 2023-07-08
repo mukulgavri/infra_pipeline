@@ -1,0 +1,29 @@
+pipeline {
+  agent any
+  stages {
+    stage('Terraform') {
+      steps {
+        sh 'terraform init'
+        sh 'terraform apply'
+      }
+    }
+    stage('Packer') {
+      steps {
+        sh 'packer build docker_container.pkr.hcl'
+      }
+    }
+    stage('Ansible') {
+      steps {
+        ansible : 'all' playbook= 'k8cli-playbook.yml'
+      }
+    }
+    stage('Kubernetes') {
+      when {
+        branch 'master'
+      }
+      steps {
+        sh 'kubectl apply -f deployment.yml'
+      }
+    }
+  }
+}

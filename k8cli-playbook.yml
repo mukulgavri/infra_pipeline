@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Install the Kubernetes CLI
+      apt:
+        name: kubectl
+        state: present
+
+    - name: Create the Kubernetes cluster
+      kubernetes:
+        create_cluster: yes
+
+    - name: Deploy the Docker image
+      kubernetes:
+        apply:
+          path: deployment.yaml
